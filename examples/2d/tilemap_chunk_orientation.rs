@@ -15,44 +15,17 @@ fn main() {
 }
 
 fn setup(mut commands: Commands, assets: Res<AssetServer>) {
-    let chunk_size = UVec2::splat(8);
-    let tile_display_size = UVec2::splat(64);
-
-    // We'll use each possible orientation, one per column
-    let orientation = [
-        TileOrientation::Default,
-        TileOrientation::Rotate90,
-        TileOrientation::Rotate180,
-        TileOrientation::Rotate270,
-        TileOrientation::MirrorH,
-        TileOrientation::MirrorHRotate90,
-        TileOrientation::MirrorHRotate180,
-        TileOrientation::MirrorHRotate270,
-    ];
-
-    // Show different color/alpha on each row
-    let colors = [
-        Color::WHITE,
-        Color::linear_rgb(1.0, 0.0, 0.0),
-        Color::linear_rgb(0.0, 1.0, 0.0),
-        Color::linear_rgb(0.0, 0.0, 1.0),
-        Color::linear_rgba(1.0, 0.0, 0.0, 0.25),
-        Color::linear_rgba(0.0, 1.0, 0.0, 0.25),
-        Color::linear_rgba(0.0, 0.0, 1.0, 0.25),
-        Color::linear_rgba(1.0, 1.0, 1.0, 0.5),
-    ];
+    let chunk_size = uvec2(17, 1);
+    let tile_display_size = UVec2::splat(32);
 
     let tile_data = (0..chunk_size.element_product())
         .map(|i| {
-            let row = i / 8;
-            let col = i % 8;
+            let v = i as f32 / 16.0;
             Some(TileData {
-                // Alternate tiles per row
-                tileset_index: (row % 2) as u16,
-                color: colors[row as usize],
-                // Last (top) row is invisible
-                visible: row != 7,
-                orientation: orientation[col as usize],
+                tileset_index: 0,
+                color: Color::srgba(v, v, v, 1.0),
+                visible: true,
+                orientation: TileOrientation::Default,
             })
         })
         .collect();

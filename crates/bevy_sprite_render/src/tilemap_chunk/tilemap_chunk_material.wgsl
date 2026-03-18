@@ -17,14 +17,25 @@ struct TileData {
     mirror_d: bool,
 }
 
+fn gamma_function(value: f32) -> f32 {
+	if value <= 0.0 {
+		return value;
+	}
+	if value <= 0.04045 {
+		return value / 12.92; // linear falloff in dark values
+	} else {
+		return pow((value + 0.055) / 1.055, 2.4); // gamma curve in other area
+	}
+}
+
 fn get_tile_data(coord: vec2<u32>) -> TileData {
     let data = textureLoad(tile_data, coord, 0);
 
     let tileset_index = data.r;
 
-    let color_r = f32(data.g & 0xFFu) / 255.0;
-    let color_g = f32((data.g >> 8u) & 0xFFu) / 255.0;
-    let color_b = f32(data.b & 0xFFu) / 255.0;
+    let color_r = gamma_function(f32(data.g & 0xFFu) / 255.0);
+    let color_g = gamma_function(f32((data.g >> 8u) & 0xFFu) / 255.0);
+    let color_b = gamma_function(f32(data.b & 0xFFu) / 255.0);
     let color_a = f32((data.b >> 8u) & 0xFFu) / 255.0;
 
     let color = vec4<f32>(color_r, color_g, color_b, color_a);
